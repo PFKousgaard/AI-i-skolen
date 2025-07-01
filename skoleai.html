@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="da" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaktiv Guide til AI i Undervisningen</title>
+    
+    <!-- Chosen Palette: Calm Harmony (Warm Neutrals with a soft Teal/Cyan Accent) -->
+    <!-- Application Structure Plan: The application is structured thematically to align with a teacher's workflow and questions, rather than mirroring the report's chapters. The structure is: 1. Home (a quick, compelling intro), 2. Practical Use (the core "how-to" with a filterable toolbox, plus new LLM-powered generators), 3. Future Classroom (pedagogical shifts and student skills), 4. Challenges & Ethics (a balanced view of risks), and 5. Frameworks (official guidelines). This user-centric flow moves from immediate, practical needs to broader, strategic considerations, making the information more accessible and actionable for busy educators. -->
+    <!-- Visualization & Content Choices: 1. Inform (Home): Key stats are highlighted to grab attention. 2. Compare (Pros/Cons): A Chart.js bar chart visualizes the balance between benefits and challenges, offering a quick, data-driven overview instead of a static table. 3. Organize (Toolbox): The extensive list of tools from the report is transformed into an interactive, filterable grid of cards, allowing users to instantly find tools for specific tasks (e.g., "Lektionsplanlægning"). This is a major usability improvement. 4. Change (Teacher's Role): A simple before/after diagram built with HTML/CSS visually simplifies the abstract concept of the teacher's evolving role. 5. Relationships (Ethical Trilemma): A CSS-based diagram shows the connection between data, bias, and integrity. This makes the complex ethical considerations easier to understand. New LLM features provide direct utility: lesson plan, quiz question generation, text summarization, and activity idea generation. All choices prioritize interaction and scannability over dense text. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            color: #1e293b; /* slate-800 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 50vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 450px;
+            }
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            border-bottom-color: #0891b2; /* cyan-600 */
+            color: #0e7490; /* cyan-700 */
+        }
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #0891b2;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 8px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-cyan-700">AI for Lærere</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#intro" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-700">Introduktion</a>
+                        <a href="#praktisk-anvendelse" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-700">Praktisk Anvendelse</a>
+                        <a href="#fremtidens-klasse" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-700">Fremtidens Klasse</a>
+                        <a href="#udfordringer" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-700">Udfordringer & Etik</a>
+                        <a href="#rammer" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-700">Rammer & Regler</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Sektion 1: Intro -->
+        <section id="intro" class="py-16 sm:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-5xl">AI i Undervisningen: Din Guide</h2>
+                <p class="mt-6 text-lg leading-8 text-slate-600 max-w-3xl mx-auto">Kunstig intelligens er ikke længere fremtidsmusik – det er et værktøj, du kan bruge i dag. Denne guide er designet til at vise dig *hvordan* AI kan blive din nye assistent, effektivisere dit arbejde og skabe mere engagerende undervisning for dine elever.</p>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-slate-50 p-6 rounded-lg shadow-sm">
+                        <h3 class="text-lg font-semibold text-cyan-700">Hvad er AI?</h3>
+                        <p class="mt-2 text-slate-600">Kort fortalt er AI systemer, der kan udføre opgaver, som normalt kræver menneskelig intelligens. Generativ AI, som f.eks. ChatGPT, er specialiseret i at skabe nyt indhold som tekst, billeder og lektionsplaner.</p>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-lg shadow-sm">
+                        <h3 class="text-lg font-semibold text-cyan-700">Hvorfor er det vigtigt?</h3>
+                        <p class="mt-2 text-slate-600">AI former den verden, vi forbereder vores elever til. At forstå og kunne anvende AI er en afgørende fremtidskompetence. Som lærer har du en nøglerolle i at guide eleverne i ansvarlig brug af teknologien.</p>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-lg shadow-sm">
+                        <h3 class="text-lg font-semibold text-cyan-700">AI i din hverdag</h3>
+                        <p class="mt-2 text-slate-600">Du bruger allerede AI hver dag – fra GPS-navigation og film-anbefalinger til autokorrektur. Principperne er de samme, når AI anvendes i klasselokalet.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sektion 2: Praktisk Anvendelse -->
+        <section id="praktisk-anvendelse" class="py-16 sm:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Gør dit arbejde lettere med AI</h2>
+                    <p class="mt-4 text-lg leading-8 text-slate-600 max-w-3xl mx-auto">AI kan automatisere tidskrævende opgaver og frigive tid til det, der betyder mest: dine elever. Udforsk de mest almindelige anvendelser og find værktøjer, der kan hjælpe dig i dag.</p>
+                </div>
+
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
+                        <h3 class="font-semibold text-cyan-700">🕒 Effektiviser forberedelse</h3>
+                        <p class="mt-2 text-slate-600">Generer lynhurtigt udkast til lektionsplaner, quizzer, arbejdsark og præsentationer. Undersøgelser viser, at lærere kan spare op til 6 timer om ugen.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
+                        <h3 class="font-semibold text-cyan-700">🧑‍🎓 Personliggør undervisning</h3>
+                        <p class="mt-2 text-slate-600">Tilpas læsematerialer til forskellige niveauer, differentier opgaver, og giv eleverne individuel støtte. AI kan skabe en mere inkluderende læringsoplevelse.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
+                        <h3 class="font-semibold text-cyan-700">📝 Optimer vurdering & feedback</h3>
+                        <p class="mt-2 text-slate-600">Få hjælp til at rette opgaver (især multiple choice) og formuler personlig, konstruktiv feedback på få minutter, så eleverne kan forbedre sig hurtigere.</p>
+                    </div>
+                </div>
+                
+                <div id="vaerktoejer" class="mt-20">
+                    <h3 class="text-2xl font-bold text-center text-slate-800">AI Værktøjskasse for Lærere</h3>
+                    <p class="mt-2 text-center text-slate-600">Filtrer for at finde værktøjer til dine specifikke behov.</p>
+                    <div id="tool-filters" class="flex flex-wrap justify-center gap-2 mt-6">
+                        <button class="tool-filter-btn active bg-cyan-600 text-white px-4 py-2 rounded-full text-sm font-medium" data-filter="all">Alle</button>
+                    </div>
+
+                    <div id="tool-grid" class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        <!-- Værktøjer indsættes her af JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Ny sektion: LLM-drevne funktioner -->
+                <div class="mt-20">
+                    <h3 class="text-2xl font-bold text-center text-slate-800">✨ AI-assistenter til din undervisning ✨</h3>
+                    <p class="mt-2 text-center text-slate-600">Prøv disse nye AI-drevne værktøjer til at hjælpe dig med lektionsplaner, quizspørgsmål, tekstopsummering og idégenerering.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+                        <!-- Lektionsplanidé-generator -->
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h4 class="text-xl font-semibold text-cyan-700">Lektionsplanidé-generator</h4>
+                            <p class="mt-2 text-slate-600 text-sm">Få et hurtigt udkast til en lektionsplan baseret på dit emne og klassetrin.</p>
+                            <div class="mt-4">
+                                <label for="lessonTopic" class="block text-sm font-medium text-slate-700">Emne:</label>
+                                <input type="text" id="lessonTopic" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm p-2" placeholder="F.eks. Bæredygtighed">
+                            </div>
+                            <div class="mt-4">
+                                <label for="lessonGrade" class="block text-sm font-medium text-slate-700">Klassetrin:</label>
+                                <input type="text" id="lessonGrade" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm p-2" placeholder="F.eks. 7. klasse">
+                            </div>
+                            <button id="generateLessonPlanBtn" class="mt-4 w-full bg-cyan-600 text-white py-2 px-4 rounded-md hover:bg-cyan-700 transition-colors font-semibold flex items-center justify-center">
+                                Generer Lektionsplan ✨
+                                <span id="lessonPlanLoading" class="loading-spinner hidden"></span>
+                            </button>
+                            <div id="lessonPlanOutput" class="mt-4 p-4 bg-slate-50 border border-slate-200 rounded-md text-slate-700 whitespace-pre-wrap text-sm" style="min-height: 100px;">
+                                Din lektionsplan vil blive vist her...
+                            </div>
+                        </div>
+
+                        <!-- Quizspørgsmåls-generator -->
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h4 class="text-xl font-semibold text-cyan-700">Quizspørgsmåls-generator</h4>
+                            <p class="mt-2 text-slate-600 text-sm">Få hjælp til at generere quizspørgsmål til et givent emne og type.</p>
+                            <div class="mt-4">
+                                <label for="quizTopic" class="block text-sm font-medium text-slate-700">Emne:</label>
+                                <input type="text" id="quizTopic" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm p-2" placeholder="F.eks. Anden Verdenskrig">
+                            </div>
+                            <div class="mt-4">
+                                <label for="quizType" class="block text-sm font-medium text-slate-700">Spørgsmålstype:</label>
+                                <select id="quizType" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm p-2">
+                                    <option value="multiple choice">Multiple Choice</option>
+                                    <option value="open-ended">Åbne spørgsmål</option>
+                                    <option value="true/false">Sandt/Falsk</option>
+                                </select>
+                            </div>
+                            <button id="generateQuizBtn" class="mt-4 w-full bg-cyan-600 text-white py-2 px-4 rounded-md hover:bg-cyan-700 transition-colors font-semibold flex items-center justify-center">
+                                Generer Quizspørgsmål ✨
+                                <span id="quizLoading" class="loading-spinner hidden"></span>
+                            </button>
+                            <div id="quizOutput" class="mt-4 p-4 bg-slate-50 border border-slate-200 rounded-md text-slate-700 whitespace-pre-wrap text-sm" style="min-height: 100px;">
+                                Dine quizspørgsmål vil blive vist her...
+                            </div>
+                        </div>
+
+                        <!-- Tekstopsummering -->
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h4 class="text-xl font-semibold text-cyan-700">Tekstopsummering</h4>
+                            <p class="mt-2 text-slate-600 text-sm">Indsæt en længere tekst og få et kort resumé.</p>
+                            <div class="mt-4">
+                                <label for="textToSummarize" class="block text-sm font-medium text-slate-700">Tekst:</label>
+                                <textarea id="textToSummarize" rows="6" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm p-2" placeholder="Indsæt din tekst her..."></textarea>
+                            </div>
+                            <button id="summarizeTextBtn" class="mt-4 w-full bg-cyan-600 text-white py-2 px-4 rounded-md hover:bg-cyan-700 transition-colors font-semibold flex items-center justify-center">
+                                Opsummer Tekst ✨
+                                <span id="summarizeLoading" class="loading-spinner hidden"></span>
+                            </button>
+                            <div id="summarizeOutput" class="mt-4 p-4 bg-slate-50 border border-slate-200 rounded-md text-slate-700 whitespace-pre-wrap text-sm" style="min-height: 100px;">
+                                Dit resumé vil blive vist her...
+                            </div>
+                        </div>
+
+                        <!-- Idégenerator for Aktiviteter -->
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h4 class="text-xl font-semibold text-cyan-700">Idégenerator for Aktiviteter</h4>
+                            <p class="mt-2 text-slate-600 text-sm">Få kreative idéer til aktiviteter eller projekter baseret på et emne.</p>
+                            <div class="mt-4">
+                                <label for="activityTopic" class="block text-sm font-medium text-slate-700">Emne:</label>
+                                <input type="text" id="activityTopic" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm p-2" placeholder="F.eks. Klimaforandringer">
+                            </div>
+                            <div class="mt-4">
+                                <label for="activityType" class="block text-sm font-medium text-slate-700">Type idéer:</label>
+                                <select id="activityType" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm p-2">
+                                    <option value="klasseaktiviteter">Klasseaktiviteter</option>
+                                    <option value="projektforslag">Projektforslag</option>
+                                    <option value="diskussionsstartere">Diskussionsstartere</option>
+                                </select>
+                            </div>
+                            <button id="generateActivityBtn" class="mt-4 w-full bg-cyan-600 text-white py-2 px-4 rounded-md hover:bg-cyan-700 transition-colors font-semibold flex items-center justify-center">
+                                Generer Idéer ✨
+                                <span id="activityLoading" class="loading-spinner hidden"></span>
+                            </button>
+                            <div id="activityOutput" class="mt-4 p-4 bg-slate-50 border border-slate-200 rounded-md text-slate-700 whitespace-pre-wrap text-sm" style="min-height: 100px;">
+                                Dine idéer vil blive vist her...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Sektion 3: Fremtidens Klasse -->
+        <section id="fremtidens-klasse" class="py-16 sm:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Fremtidens Klasse og Lærerrolle</h2>
+                    <p class="mt-4 text-lg leading-8 text-slate-600 max-w-3xl mx-auto">AI er mere end bare et værktøj; det er en katalysator for forandring i pædagogik og læring. Det ændrer, hvad vi underviser i, og hvordan vi gør det.</p>
+                </div>
+
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                    <div class="bg-slate-50 p-8 rounded-lg">
+                        <h3 class="text-xl font-semibold text-slate-800">Lærerens rolle i forandring</h3>
+                        <p class="mt-4 text-slate-600">Når AI overtager rutineopgaver, får du mere tid til at være mentor, vejleder og facilitator. Din rolle flytter sig fra primært at være vidensformidler til at være relationsbygger og den, der fremmer elevernes dybere læring, kreativitet og kritiske tænkning.</p>
+                        <div class="mt-6 grid grid-cols-2 gap-4">
+                            <div>
+                                <h4 class="font-semibold text-slate-500">Før AI:</h4>
+                                <ul class="mt-2 list-disc list-inside text-slate-600 text-sm">
+                                    <li>Primær vidensformidler</li>
+                                    <li>Standardiseret undervisning</li>
+                                    <li>Tidskrævende rettearbejde</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-cyan-700">Med AI:</h4>
+                                <ul class="mt-2 list-disc list-inside text-cyan-800 text-sm">
+                                    <li>Facilitator & mentor</li>
+                                    <li>Personlig læring</li>
+                                    <li>Fokus på højere ordens tænkning</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="bg-slate-50 p-8 rounded-lg">
+                        <h3 class="text-xl font-semibold text-slate-800">Nye kompetencer for elever</h3>
+                        <p class="mt-4 text-slate-600">Fokus flyttes fra udenadslære til kompetencer, der "fremtidssikrer" eleverne. Med AI som partner kan eleverne udvikle:</p>
+                        <ul class="mt-4 space-y-2">
+                           <li class="flex items-start"><span class="text-cyan-600 mr-2">✓</span><span><b>Kritisk tænkning:</b> At evaluere og stille spørgsmål til AI-genereret indhold.</span></li>
+                           <li class="flex items-start"><span class="text-cyan-600 mr-2">✓</span><span><b>Kreativ problemløsning:</b> At bruge AI som en tænkepartner til at udvikle nye ideer.</span></li>
+                           <li class="flex items-start"><span class="text-cyan-600 mr-2">✓</span><span><b>Digital dannelse (AI-litteracitet):</b> At bruge teknologien ansvarligt og etisk.</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sektion 4: Udfordringer -->
+        <section id="udfordringer" class="py-16 sm:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Udfordringer & Etiske Overvejelser</h2>
+                    <p class="mt-4 text-lg leading-8 text-slate-600 max-w-3xl mx-auto">AI er et kraftfuldt værktøj, men det er ikke uden risici. En ansvarlig tilgang kræver, at vi er bevidste om udfordringerne og navigerer dem omhyggeligt.</p>
+                </div>
+
+                <div class="mt-12">
+                    <div class="chart-container">
+                        <canvas id="balanceChart"></canvas>
+                    </div>
+                     <p class="text-center mt-4 text-sm text-slate-500">Visualisering af balancen mellem AI's fordele og udfordringer i undervisningen.</p>
+                </div>
+
+                <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-lg border-l-4 border-red-500">
+                        <h3 class="text-lg font-semibold">🔒 Datafortrolighed (GDPR)</h3>
+                        <p class="mt-2 text-slate-600">AI-systemer kan kræve adgang til elevdata. Det er afgørende at sikre, at alle anvendte værktøjer overholder GDPR og beskytter elevernes privatliv. Skolens ledelse har ansvaret.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg border-l-4 border-amber-500">
+                        <h3 class="text-lg font-semibold">⚖️ Bias og Ulighed</h3>
+                        <p class="mt-2 text-slate-600">AI-modeller trænes på eksisterende data og kan derfor genskabe og endda forstærke samfundets bias. Dette kan føre til uretfærdig behandling af elever. Vær kritisk over for AI's output.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg border-l-4 border-blue-500">
+                        <h3 class="text-lg font-semibold">✍️ Akademisk Integritet</h3>
+                        <p class="mt-2 text-slate-600">Risikoen for snyd er reel. Det kræver en ny opgavekultur, hvor fokus flyttes fra det færdige produkt til processen, den kritiske refleksion og den mundtlige formidling.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sektion 5: Rammer & Regler -->
+        <section id="rammer" class="py-16 sm:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Nationale Rammer og Anbefalinger</h2>
+                    <p class="mt-4 text-lg leading-8 text-slate-600 max-w-3xl mx-auto">I Danmark er tilgangen til AI i undervisningen præget af lokal autonomi, men der findes klare anbefalinger at læne sig op ad.</p>
+                </div>
+
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-slate-50 p-8 rounded-lg">
+                        <h3 class="text-xl font-semibold">For Folkeskolen</h3>
+                        <p class="mt-4 text-slate-600">Ansvaret ligger hos den enkelte skolebestyrelse. Styrelsen for Undervisning og Kvalitet (STUK) anbefaler dog at:</p>
+                        <ul class="mt-4 space-y-2 list-disc list-inside">
+                            <li>Formulere en fælles retning og klare rammer på skolen.</li>
+                            <li>Sikre at anvendte løsninger overholder GDPR.</li>
+                            <li>Inddrage forældrene for at skabe åbenhed.</li>
+                            <li>Balancere digital og analog undervisning.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-slate-50 p-8 rounded-lg">
+                        <h3 class="text-xl font-semibold">For Gymnasiale Uddannelser</h3>
+                        <p class="mt-4 text-slate-600">STUK har udgivet mere specifikke anbefalinger, der lægger vægt på en afbalanceret og kritisk brug af AI. Nøglepunkter inkluderer:</p>
+                        <ul class="mt-4 space-y-2 list-disc list-inside">
+                            <li>Anvende AI, når det er didaktisk og pædagogisk meningsfuldt.</li>
+                            <li>Prioritere udvikling af lærernes AI-kompetencer.</li>
+                            <li>Organisere undervisning, der fremmer kritisk refleksion over teknologien.</li>
+                            <li>Tilpasse skriftlige opgaver, så elever lærer at bruge AI til at kvalificere deres arbejdsproces.</li>
+                        </ul>
+                    </div>
+                </div>
+                 <div class="mt-12 text-center bg-cyan-50 border-l-4 border-cyan-500 text-cyan-800 p-4 rounded-r-lg">
+                    <p><b>Kernebudskab:</b> Succesfuld AI-integration handler ikke om at købe de nyeste værktøjer, men om at investere i menneskelig kapital – lærernes og elevernes AI-kompetencer og kritiske dømmekraft.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-800 text-white">
+        <div class="container mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-sm text-slate-400">Denne interaktive guide er baseret på rapporten "AI i Undervisningen: En Fremtidssikret Tilgang for Lærere".</p>
+        </div>
+    </footer>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const toolData = [
+            { name: "ChatGPT / Gemini", category: ["Generel", "Planlægning", "Kreativitet"], desc: "Alsidige chatbots til brainstorming, udkast til lektionsplaner og besvarelse af spørgsmål." },
+            { name: "Brisk", category: ["Planlægning", "Feedback", "Differentiering"], desc: "Chrome-udvidelse designet til lærere. Skaber curriculum, giver feedback i Google Docs og justerer læseniveauer." },
+            { name: "Curipod", category: ["Planlægning", "Engagement"], desc: "Genererer interaktive slides, afstemninger og aktiviteter til at engagere eleverne." },
+            { name: "Eduaide", category: ["Planlægning", "Vurdering"], desc: "Hjælper med at skabe rubrikker, arbejdsark og andet undervisningsmateriale." },
+            { name: "Canva", category: ["Kreativitet"], desc: "Designværktøj med AI-funktioner til at skabe præsentationer, billeder og grafik." },
+            { name: "Gradescope", category: ["Vurdering", "Feedback"], desc: "AI-assisteret retteværktøj, der grupperer lignende svar for hurtigere og mere konsistent feedback." },
+            { name: "Quizlet", category: ["Engagement", "Vurdering"], desc: "Bruger AI til at generere flashcards, øvelsessæt og formative tests." },
+            { name: "Otter.ai", category: ["Administrativt"], desc: "Optager og opsummerer automatisk møder, så du kan fokusere på diskussionen." },
+            { name: "Grammarly", category: ["Kreativitet", "Feedback"], desc: "Skriveassistent, der forbedrer grammatik, klarhed og tone i realtid for både lærere og elever." },
+            { name: "Kahoot!", category: ["Engagement", "Vurdering"], desc: "Platform for spilbaseret læring, hvor AI kan hjælpe med at generere quizzer." },
+            { name: "Consensus", category: ["Research"], desc: "En AI-drevet søgemaskine til at finde og opsummere resultater fra videnskabelige artikler." },
+            { name: "Remind", category: ["Administrativt"], desc: "Kommunikationsværktøj, der bruger AI til at lette dialogen mellem skole og hjem." },
+        ];
+
+        const toolGrid = document.getElementById('tool-grid');
+        const toolFiltersContainer = document.getElementById('tool-filters');
+        let activeFilter = 'all';
+
+        function renderTools() {
+            toolGrid.innerHTML = '';
+            const filteredTools = activeFilter === 'all' 
+                ? toolData 
+                : toolData.filter(tool => tool.category.includes(activeFilter));
+
+            filteredTools.forEach(tool => {
+                const toolCard = document.createElement('div');
+                toolCard.className = 'bg-white p-5 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300';
+                toolCard.innerHTML = `
+                    <h4 class="font-bold text-slate-800">${tool.name}</h4>
+                    <p class="text-slate-600 mt-2 text-sm">${tool.desc}</p>
+                    <div class="mt-3 flex flex-wrap gap-2">
+                        ${tool.category.map(cat => `<span class="bg-cyan-100 text-cyan-800 text-xs font-medium px-2.5 py-0.5 rounded-full">${cat}</span>`).join('')}
+                    </div>
+                `;
+                toolGrid.appendChild(toolCard);
+            });
+        }
+
+        function setupFilters() {
+            const categories = [...new Set(toolData.flatMap(tool => tool.category))];
+            categories.sort();
+            categories.forEach(category => {
+                const filterBtn = document.createElement('button');
+                filterBtn.className = 'tool-filter-btn bg-slate-200 text-slate-700 px-4 py-2 rounded-full text-sm font-medium transition-colors';
+                filterBtn.textContent = category;
+                filterBtn.dataset.filter = category;
+                toolFiltersContainer.appendChild(filterBtn);
+            });
+
+            toolFiltersContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('tool-filter-btn')) {
+                    activeFilter = e.target.dataset.filter;
+                    document.querySelectorAll('.tool-filter-btn').forEach(btn => {
+                        btn.classList.remove('active', 'bg-cyan-600', 'text-white');
+                        btn.classList.add('bg-slate-200', 'text-slate-700');
+                    });
+                    e.target.classList.add('active', 'bg-cyan-600', 'text-white');
+                    e.target.classList.remove('bg-slate-200', 'text-slate-700');
+                    renderTools();
+                }
+            });
+        }
+        
+        function renderBalanceChart() {
+            const ctx = document.getElementById('balanceChart').getContext('2d');
+            const balanceData = {
+                labels: ['Effektivitet', 'Personalisering', 'Engagement', 'Kvalitet', 'Innovation'],
+                datasets: [{
+                    label: 'Fordele',
+                    data: [9, 8, 7, 7, 8],
+                    backgroundColor: 'rgba(22, 163, 74, 0.6)', // green-600
+                    borderColor: 'rgba(22, 163, 74, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Udfordringer',
+                    data: [5, 6, 4, 7, 6],
+                    backgroundColor: 'rgba(239, 68, 68, 0.6)', // red-500
+                    borderColor: 'rgba(239, 68, 68, 1)',
+                    borderWidth: 1
+                }]
+            };
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: balanceData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 10,
+                            title: {
+                                display: true,
+                                text: 'Vurdering (1-10)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Balance mellem Fordele og Udfordringer ved AI',
+                            font: { size: 16 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                footer: (tooltipItems) => {
+                                    const benefitIndex = tooltipItems.findIndex(item => item.dataset.label === 'Fordele');
+                                    const challengeIndex = tooltipItems.findIndex(item => item.dataset.label === 'Udfordringer');
+                                    if (benefitIndex > -1 && challengeIndex > -1) {
+                                       if(tooltipItems[0].label === 'Effektivitet') return 'AI sparer tid, men kræver opsyn for at sikre kvalitet.';
+                                       if(tooltipItems[0].label === 'Personalisering') return 'Giver differentiering, men risikerer bias.';
+                                       if(tooltipItems[0].label === 'Engagement') return 'Gamification motiverer, men kan fjerne fokus fra læring.';
+                                       if(tooltipItems[0].label === 'Kvalitet') return 'Kan forbedre materialer, men risiko for overfladiskhed.';
+                                       if(tooltipItems[0].label === 'Innovation') return 'Fremmer nye ideer, men kræver stærk kritisk sans.';
+                                    }
+                                    return '';
+                                },
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function handleNavHighlighting() {
+            const sections = document.querySelectorAll('main section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: '-50% 0px -50% 0px' });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        }
+
+        // Gemini API integration
+        async function callGeminiAPI(prompt, outputElement, loadingElement) {
+            outputElement.innerHTML = ''; // Clear previous output
+            loadingElement.classList.remove('hidden');
+            outputElement.classList.add('hidden');
+
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+            const payload = { contents: chatHistory };
+            const apiKey = ""; // Leave this as-is. Canvas will provide it at runtime.
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    outputElement.innerHTML = text;
+                } else {
+                    outputElement.innerHTML = 'Kunne ikke generere et svar. Prøv igen.';
+                }
+            } catch (error) {
+                console.error('Fejl ved kald af Gemini API:', error);
+                outputElement.innerHTML = 'Der opstod en fejl. Tjek konsollen for detaljer.';
+            } finally {
+                loadingElement.classList.add('hidden');
+                outputElement.classList.remove('hidden');
+            }
+        }
+
+        // Event listener for Lesson Plan Generator
+        const generateLessonPlanBtn = document.getElementById('generateLessonPlanBtn');
+        const lessonTopicInput = document.getElementById('lessonTopic');
+        const lessonGradeInput = document.getElementById('lessonGrade');
+        const lessonPlanOutput = document.getElementById('lessonPlanOutput');
+        const lessonPlanLoading = document.getElementById('lessonPlanLoading');
+
+        generateLessonPlanBtn.addEventListener('click', () => {
+            const topic = lessonTopicInput.value.trim();
+            const grade = lessonGradeInput.value.trim();
+            if (topic && grade) {
+                const prompt = `Generer et udkast til en lektionsplan for en ${grade} om emnet "${topic}". Inkluder læringsmål, aktiviteter, materialer og vurderingsmetoder.`;
+                callGeminiAPI(prompt, lessonPlanOutput, lessonPlanLoading);
+            } else {
+                lessonPlanOutput.innerHTML = 'Udfyld venligst både emne og klassetrin.';
+            }
+        });
+
+        // Event listener for Quiz Question Generator
+        const generateQuizBtn = document.getElementById('generateQuizBtn');
+        const quizTopicInput = document.getElementById('quizTopic');
+        const quizTypeSelect = document.getElementById('quizType');
+        const quizOutput = document.getElementById('quizOutput');
+        const quizLoading = document.getElementById('quizLoading');
+
+        generateQuizBtn.addEventListener('click', () => {
+            const topic = quizTopicInput.value.trim();
+            const type = quizTypeSelect.value;
+            if (topic) {
+                const prompt = `Generer 5 quizspørgsmål af typen "${type}" om emnet "${topic}".`;
+                callGeminiAPI(prompt, quizOutput, quizLoading);
+            } else {
+                quizOutput.innerHTML = 'Udfyld venligst emnet.';
+            }
+        });
+
+        // Event listener for Text Summarizer
+        const summarizeTextBtn = document.getElementById('summarizeTextBtn');
+        const textToSummarizeInput = document.getElementById('textToSummarize');
+        const summarizeOutput = document.getElementById('summarizeOutput');
+        const summarizeLoading = document.getElementById('summarizeLoading');
+
+        summarizeTextBtn.addEventListener('click', () => {
+            const text = textToSummarizeInput.value.trim();
+            if (text) {
+                const prompt = `Opsummer følgende tekst kort og præcist: ${text}`;
+                callGeminiAPI(prompt, summarizeOutput, summarizeLoading);
+            } else {
+                summarizeOutput.innerHTML = 'Indsæt venligst tekst til opsummering.';
+            }
+        });
+
+        // Event listener for Activity Idea Generator
+        const generateActivityBtn = document.getElementById('generateActivityBtn');
+        const activityTopicInput = document.getElementById('activityTopic');
+        const activityTypeSelect = document.getElementById('activityType');
+        const activityOutput = document.getElementById('activityOutput');
+        const activityLoading = document.getElementById('activityLoading');
+
+        generateActivityBtn.addEventListener('click', () => {
+            const topic = activityTopicInput.value.trim();
+            const type = activityTypeSelect.value;
+            if (topic) {
+                const prompt = `Generer 3-5 kreative ${type} idéer til undervisning om emnet "${topic}".`;
+                callGeminiAPI(prompt, activityOutput, activityLoading);
+            } else {
+                activityOutput.innerHTML = 'Udfyld venligst emnet.';
+            }
+        });
+
+
+        // Initial calls
+        setupFilters();
+        renderTools();
+        renderBalanceChart();
+        handleNavHighlighting();
+    });
+    </script>
+</body>
+</html>
